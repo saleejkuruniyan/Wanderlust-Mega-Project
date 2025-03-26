@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# Set the Instance ID and path to the .env file
-INSTANCE_ID="i-030da7d31a1dbbffc"
+# Get the name of one of the nodes in AKS (e.g., the first node)
+NODE_NAME=$(kubectl get nodes -o=jsonpath='{.items[0].metadata.name}')
 
-# Retrieve the public IP address of the specified EC2 instance
-ipv4_address=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].PublicIpAddress' --output text)
+# Retrieve the external IP of the node (assuming it has one)
+ipv4_address=$(kubectl get node $NODE_NAME -o=jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}')
+
 
 # Path to the .env file
 file_to_find="../backend/.env.docker"
