@@ -4,22 +4,20 @@
 RESOURCE_GROUP="WanderlustResourceGroup"
 CLUSTER_NAME="wanderlust"
 
-# Get the name of one of the nodes (e.g., the first node)
-NODE_NAME=$(az aks nodepool list --resource-group $RESOURCE_GROUP --cluster-name $CLUSTER_NAME --query '[0].name' -o tsv)
+NODE_RG=$(az aks show --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --query nodeResourceGroup -o tsv)
 
-# Retrieve the node resource group (AKS creates a separate node resource group)
-NODE_RESOURCE_GROUP=$(az aks show --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --query "nodeResourceGroup" -o tsv)
+VMSS_NAME=$(az vmss list --resource-group $NODE_RG --query "[].name" -o tsv)
 
-# Get the external IP of the first VM in the node pool
-ipv4_address=$(az network public-ip list --resource-group $NODE_RESOURCE_GROUP --query "[?ipAddress!=null].ipAddress" -o tsv | head -n 1)
+ipv4_address=$(az vmss list-instance-public-ips \
+  --resource-group $NODE_RG \
+  --name $VMSS_NAME \
+  --query "[].ipAddress" -o tsv | head -n 1)
 
 # Exit if ipv4_address is empty
 if [[ -z "$ipv4_address" ]]; then
     echo "ERROR: No external IP found for node $NODE_NAME."
     exit 1
 fi
-
-ipv4_address="172.190.57.137"
 
 # Path to the .env file
 file_to_find="../backend/.env.docker"
