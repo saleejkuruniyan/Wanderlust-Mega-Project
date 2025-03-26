@@ -1,10 +1,17 @@
 #!/bin/bash
 
-# Get the name of one of the nodes in AKS (e.g., the first node)
-NODE_NAME=$(kubectl get nodes -o=jsonpath='{.items[0].metadata.name}')
+# Define your AKS cluster and resource group
+RESOURCE_GROUP="WanderlustResourceGroup"
+CLUSTER_NAME="wanderlust"
 
-# Retrieve the external IP of the node (assuming it has one)
-ipv4_address=$(kubectl get node $NODE_NAME -o=jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}')
+# Get the name of one of the nodes (e.g., the first node)
+NODE_NAME=$(az aks nodepool list --resource-group $RESOURCE_GROUP --cluster-name $CLUSTER_NAME --query '[0].name' -o tsv)
+
+# Retrieve the node resource group (AKS creates a separate node resource group)
+NODE_RESOURCE_GROUP=$(az aks show --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --query "nodeResourceGroup" -o tsv)
+
+# Get the external IP of the first VM in the node pool
+ipv4_address=$(az network public-ip list --resource-group $NODE_RESOURCE_GROUP --query "[?ipAddress!=null].ipAddress" -o tsv | head -n 1)
 
 # Exit if ipv4_address is empty
 if [[ -z "$ipv4_address" ]]; then
