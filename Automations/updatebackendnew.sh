@@ -19,6 +19,8 @@ if [[ -z "$ipv4_address" ]]; then
     exit 1
 fi
 
+ipv4_address="172.190.57.137"
+
 # Path to the .env file
 file_to_find="../backend/.env.docker"
 
