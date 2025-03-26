@@ -6,6 +6,12 @@ NODE_NAME=$(kubectl get nodes -o=jsonpath='{.items[0].metadata.name}')
 # Retrieve the external IP of the node (assuming it has one)
 ipv4_address=$(kubectl get node $NODE_NAME -o=jsonpath='{.status.addresses[?(@.type=="ExternalIP")].address}')
 
+# Exit if ipv4_address is empty
+if [[ -z "$ipv4_address" ]]; then
+    echo "ERROR: No external IP found for node $NODE_NAME."
+    exit 1
+fi
+
 # Path to the .env file
 file_to_find="../frontend/.env.docker"
 
