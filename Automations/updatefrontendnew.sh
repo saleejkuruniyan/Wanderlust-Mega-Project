@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define your AKS cluster and resource group
-RESOURCE_GROUP="WanderlustResourceGroup"
-CLUSTER_NAME="wanderlust"
+RESOURCE_GROUP=$1
+CLUSTER_NAME=$2
 
 NODE_RG=$(az aks show --resource-group $RESOURCE_GROUP --name $CLUSTER_NAME --query nodeResourceGroup -o tsv)
 

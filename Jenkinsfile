@@ -4,6 +4,8 @@ pipeline {
     
     environment{
         SONAR_HOME = tool "Sonar"
+        RESOURCE_GROUP = "WanderlustResourceGroup"
+        CLUSTER_NAME = "wanderlust"
     }
     
     parameters {
@@ -75,7 +77,7 @@ pipeline {
                     steps {
                         script{
                             dir("Automations"){
-                                sh "bash updatebackendnew.sh"
+                                sh "bash updatebackendnew.sh '${RESOURCE_GROUP}' '${CLUSTER_NAME}'"
                             }
                         }
                     }
@@ -85,7 +87,7 @@ pipeline {
                     steps {
                         script{
                             dir("Automations"){
-                                sh "bash updatefrontendnew.sh"
+                                sh "bash updatefrontendnew.sh '${RESOURCE_GROUP}' '${CLUSTER_NAME}'"
                             }
                         }
                     }
