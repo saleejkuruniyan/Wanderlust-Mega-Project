@@ -16,6 +16,8 @@ spec:
       labels:
         app: frontend
     spec:
+      imagePullSecrets:
+        - name: harbor-registry-secret
       containers:
         - name: frontend
           image: harbor.needoo.in/library/wanderlust-frontend-beta:1.0
