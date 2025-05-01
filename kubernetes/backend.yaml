@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: harbor.needoo.in/library/wanderlust-backend-beta:1.3
+          image: harbor.needoo.in/library/wanderlust-backend-beta:1.0
           ports:
             - containerPort: 8080
 ---
