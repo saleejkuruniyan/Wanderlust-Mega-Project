@@ -16,6 +16,7 @@ spec:
       labels:
         app: backend
     spec:
+      imagePullPolicy: Always
       imagePullSecrets:
         - name: harbor-registry-secret
       containers:
