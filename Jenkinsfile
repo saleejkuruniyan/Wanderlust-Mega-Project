@@ -4,7 +4,6 @@ pipeline {
     agent none
 
     environment {
-        SONAR_HOME = tool "Sonar"
         REGISTRY_URL = "harbor.needoo.in"
         PROJ_NAME = "library"
     }
@@ -62,6 +61,7 @@ pipeline {
                 stage("SonarQube: Code Analysis") {
                     steps {
                         script {
+                            def sonarHome = tool "Sonar"
                             sonarqube_analysis("Sonar", "wanderlust", "wanderlust")
                         }
                     }
