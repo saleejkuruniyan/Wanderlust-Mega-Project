@@ -5,8 +5,8 @@ metadata:
   namespace: wanderlust
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 5Gi
-  storageClassName: longhorn
+  storageClassName: longhorn-rwx
