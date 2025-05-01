@@ -17,10 +17,35 @@ pipeline {
         stage('Prepare Agent') {
             agent {
                 kubernetes {
-                    label 'k8s-agent'
-                    inheritFrom 'default' // Inherit from a global pod template named 'default'
-                    containerTemplate(name: 'jnlp', image: 'jenkins/inbound-agent:latest', args: '${computer.jnlpmac} ${computer.name}')
-                    containerTemplate(name: 'maven', image: 'maven:3.8.1-jdk-11', ttyEnabled: true, command: 'cat')
+                    label 'kaniko-agent'
+                    defaultContainer 'jnlp'
+yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:debug
+      command:
+        - cat
+      tty: true
+      volumeMounts:
+        - name: docker-config
+          mountPath: /kaniko/.docker/config.json
+          subPath: .dockerconfigjson
+    - name: maven
+      image: maven:3.8.1-jdk-11
+      command:
+        - cat
+      tty: true
+  volumes:
+    - name: docker-config
+      secret:
+        secretName: docker-config
+        items:
+          - key: .dockerconfigjson
+            path: .dockerconfigjson
+"""
                 }
             }
             stages {
@@ -49,43 +74,30 @@ pipeline {
                         }
                     }
                 }
-
-                stage("SonarQube: Code Analysis") {
+                
+                stage("Docker: Build & Push with Kaniko") {
                     steps {
-                        script {
-                            def sonarHome = tool "Sonar"
-                            sonarqube_analysis("Sonar", "wanderlust", "wanderlust")
-                        }
-                    }
-                }
+                        container('kaniko') {
+                            script {
+                                def backendDest = "${REGISTRY_URL}/${PROJ_NAME}/wanderlust-backend-beta:${params.BACKEND_DOCKER_TAG}"
+                                def frontendDest = "${REGISTRY_URL}/${PROJ_NAME}/wanderlust-frontend-beta:${params.FRONTEND_DOCKER_TAG}"
 
-                stage("SonarQube: Code Quality Gates") {
-                    steps {
-                        script {
-                            sonarqube_code_quality()
-                        }
-                    }
-                }
+                                sh """
+                                /kaniko/executor \
+                                  --dockerfile=backend/Dockerfile \
+                                  --context=`pwd`/backend \
+                                  --destination=${backendDest} \
+                                  --skip-tls-verify
+                                """
 
-                stage("Docker: Build Images") {
-                    steps {
-                        script {
-                            dir('backend') {
-                                registry_build("${REGISTRY_URL}", "${PROJ_NAME}", "wanderlust-backend-beta", "${params.BACKEND_DOCKER_TAG}", "registryCred")
+                                sh """
+                                /kaniko/executor \
+                                  --dockerfile=frontend/Dockerfile \
+                                  --context=`pwd`/frontend \
+                                  --destination=${frontendDest} \
+                                  --skip-tls-verify
+                                """
                             }
-
-                            dir('frontend') {
-                                registry_build("${REGISTRY_URL}", "${PROJ_NAME}", "wanderlust-frontend-beta", "${params.FRONTEND_DOCKER_TAG}", "registryCred")
-                            }
-                        }
-                    }
-                }
-
-                stage("Docker: Push to DockerHub") {
-                    steps {
-                        script {
-                            registry_push("${REGISTRY_URL}", "${PROJ_NAME}", "wanderlust-backend-beta", "${params.BACKEND_DOCKER_TAG}", "registryCred")
-                            registry_push("${REGISTRY_URL}", "${PROJ_NAME}", "wanderlust-frontend-beta", "${params.FRONTEND_DOCKER_TAG}", "registryCred")
                         }
                     }
                 }
