@@ -27,7 +27,9 @@ spec:
     - name: kaniko
       image: gcr.io/kaniko-project/executor:debug
       command:
-        - cat
+        - sleep
+      args:
+        - infinity
       tty: true
       volumeMounts:
         - name: docker-config
@@ -36,7 +38,9 @@ spec:
     - name: maven
       image: maven:3.8.1-jdk-11
       command:
-        - cat
+        - sleep
+      args:
+        - infinity
       tty: true
   volumes:
     - name: docker-config
@@ -88,9 +92,9 @@ spec:
                                   --context=`pwd`/backend \
                                   --destination=${backendDest} \
                                   --skip-tls-verify
-                                """
+                                 
+                                 rm -rf /kaniko/0/*
 
-                                sh """
                                 /kaniko/executor \
                                   --dockerfile=frontend/Dockerfile \
                                   --context=`pwd`/frontend \
