@@ -10,13 +10,30 @@ pipeline {
         stage('Prepare Agent') {
             agent {
                 kubernetes {
-                    label 'k8s-agent'
-                    inheritFrom 'default' // Inherit from a global pod template named 'default'
-                    containerTemplate(name: 'jnlp', image: 'jenkins/inbound-agent:latest', args: '${computer.jnlpmac} ${computer.name}')
-                    containerTemplate(name: 'maven', image: 'maven:3.8.1-jdk-11', ttyEnabled: true, command: 'cat')
+                    label 'kaniko-agent'
+                    defaultContainer 'jnlp'
+yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:debug
+      command:
+        - sleep
+      args:
+        - infinity
+      tty: true
+    - name: maven
+      image: maven:3.8.1-jdk-11
+      command:
+        - sleep
+      args:
+        - infinity
+      tty: true
+"""
                 }
             }
-
             stages {
                 stage("Workspace cleanup"){
                     steps{
@@ -74,6 +91,10 @@ pipeline {
                                 echo "Adding changes to git: "
                                 git add .
                                 
+                                echo "Configuring Git identity: "
+                                git config user.name "Jenkins CI"
+                                git config user.email "saleejkuruniyan@gmail.com"
+                                            
                                 echo "Commiting changes: "
                                 git commit -m "Updated environment variables"
                                 
