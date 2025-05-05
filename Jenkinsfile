@@ -103,24 +103,9 @@ pipeline {
             steps {
                 container('kaniko') {
                     script {
-                        def backendDest = "${REGISTRY_URL}/${PROJ_NAME}/wanderlust-backend-beta:${params.BACKEND_DOCKER_TAG}"
-                        def frontendDest = "${REGISTRY_URL}/${PROJ_NAME}/wanderlust-frontend-beta:${params.FRONTEND_DOCKER_TAG}"
-
-                        sh """
-                            /kaniko/executor \\
-                              --dockerfile=backend/Dockerfile \\
-                              --context=${WORKSPACE}/backend \\
-                              --destination=${backendDest} \\
-                              --skip-tls-verify
-                            
-                            rm -rf /kaniko/0/*
-
-                            /kaniko/executor \\
-                              --dockerfile=frontend/Dockerfile \\
-                              --context=${WORKSPACE}/frontend \\
-                              --destination=${frontendDest} \\
-                              --skip-tls-verify
-                        """
+                        kaniko_build_push("${REGISTRY_URL}", "${PROJ_NAME}", "backend", "wanderlust-backend-beta", "${params.BACKEND_DOCKER_TAG}")
+                        sh "rm -rf /kaniko/0/*"
+                        kaniko_build_push("${REGISTRY_URL}", "${PROJ_NAME}", "frontend", "wanderlust-frontend-beta", "${params.FRONTEND_DOCKER_TAG}")
                     }
                 }
             }
