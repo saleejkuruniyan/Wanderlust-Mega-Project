@@ -22,7 +22,7 @@ spec:
         - name: frontend
           image: harbor.needoo.in/library/wanderlust-frontend-beta:2.7
           ports:
-            - containerPort: 5173
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -34,7 +34,7 @@ spec:
   selector:
     app: frontend
   ports:
-    - port: 5173
-      targetPort: 5173
+    - port: 80
+      targetPort: 80
       protocol: TCP
       nodePort: 31000
