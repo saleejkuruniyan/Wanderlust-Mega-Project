@@ -20,7 +20,7 @@ spec:
         - name: harbor-registry-secret
       containers:
         - name: frontend
-          image: harbor.needoo.in/library/wanderlust-frontend-beta:2.7
+          image: harbor.needoo.in/library/wanderlust-frontend-beta:3.0
           ports:
             - containerPort: 80
 ---
