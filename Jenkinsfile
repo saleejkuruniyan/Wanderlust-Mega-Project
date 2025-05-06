@@ -103,9 +103,11 @@ pipeline {
             steps {
                 container('kaniko') {
                     script {
-                        kaniko_build_push("${REGISTRY_URL}", "${PROJ_NAME}", "backend", "wanderlust-backend-beta", "${params.BACKEND_DOCKER_TAG}")
-                        sh "rm -rf /kaniko/0/*"
-                        kaniko_build_push("${REGISTRY_URL}", "${PROJ_NAME}", "frontend", "wanderlust-frontend-beta", "${params.FRONTEND_DOCKER_TAG}")
+                        def builds = [
+                            ["backend", "wanderlust-backend-beta", "${params.BACKEND_DOCKER_TAG}"],
+                            ["frontend", "wanderlust-frontend-beta", "${params.FRONTEND_DOCKER_TAG}"]
+                        ]
+                        kaniko_build_push("${REGISTRY_URL}", "${PROJ_NAME}", builds)
                     }
                 }
             }
