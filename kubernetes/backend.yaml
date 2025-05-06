@@ -20,7 +20,7 @@ spec:
         - name: harbor-registry-secret
       containers:
         - name: backend
-          image: harbor.needoo.in/library/wanderlust-backend-beta:2.2
+          image: harbor.needoo.in/library/wanderlust-backend-beta:2.1
           ports:
             - containerPort: 8080
           env:
