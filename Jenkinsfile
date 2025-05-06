@@ -10,8 +10,7 @@ pipeline {
 
     environment {
         SONAR_HOME = tool "Sonar"
-        REGISTRY_URL = "harbor.needoo.in"
-        PROJ_NAME = "library"
+        REGISTRY_PATH = "harbor.needoo.in/library"
         NVD_API_KEY = credentials('nvd-api-key')
         OWASP_CACHE_DIR = "/cache/dependency-check-data"
     }
@@ -107,7 +106,7 @@ pipeline {
                             ["backend", "wanderlust-backend-beta", "${params.BACKEND_DOCKER_TAG}"],
                             ["frontend", "wanderlust-frontend-beta", "${params.FRONTEND_DOCKER_TAG}"]
                         ]
-                        kaniko_build_push("${REGISTRY_URL}", "${PROJ_NAME}", builds)
+                        kaniko_build_push_registry("${REGISTRY_PATH}", builds)
                     }
                 }
             }
