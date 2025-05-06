@@ -23,6 +23,15 @@ spec:
           image: harbor.needoo.in/library/wanderlust-frontend-beta:3.3
           ports:
             - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 3
+            
 ---
 apiVersion: v1
 kind: Service
