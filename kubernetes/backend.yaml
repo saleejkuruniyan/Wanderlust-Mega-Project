@@ -23,6 +23,14 @@ spec:
           image: harbor.needoo.in/library/wanderlust-backend-beta:3.3
           ports:
             - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 3
           env:
             - name: MONGODB_URI
               value: "mongodb://mongo-service/wanderlust"
