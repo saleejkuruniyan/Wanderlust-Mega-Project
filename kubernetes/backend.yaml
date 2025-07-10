@@ -20,7 +20,7 @@ spec:
         - name: docker-registry-secret
       containers:
         - name: backend
-          image: docker-test.wakeb.tech/wanderlust/wanderlust-backend-beta:3.3
+          image: docker-test.wakeb.tech/wanderlust/wanderlust-backend-beta:1.3
           ports:
             - containerPort: 8080
           livenessProbe:
