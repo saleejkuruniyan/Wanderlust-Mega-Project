@@ -10,7 +10,7 @@ pipeline {
 
     environment {
         SONAR_HOME = tool "Sonar"
-        REGISTRY_PATH = "harbor.needoo.in/library"
+        REGISTRY_PATH = "docker-test.wakeb.tech/wanderlust"
         NVD_API_KEY = credentials('nvd-api-key')
         OWASP_CACHE_DIR = "/cache/dependency-check-data"
     }
@@ -49,7 +49,7 @@ pipeline {
         stage('Git: Code Checkout') {
             steps {
                 script {
-                    code_checkout("https://github.com/saleejkuruniyan/Wanderlust-Mega-Project.git", "nutanix")
+                    code_checkout("https://github.com/saleejkuruniyan/Wanderlust-Mega-Project.git", "rke2")
                 }
             }
         }

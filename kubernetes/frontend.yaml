@@ -17,10 +17,10 @@ spec:
         app: frontend
     spec:
       imagePullSecrets:
-        - name: harbor-registry-secret
+        - name: docker-registry-secret
       containers:
         - name: frontend
-          image: harbor.needoo.in/library/wanderlust-frontend-beta:3.3
+          image: docker-test.wakeb.tech/wanderlust/wanderlust-frontend-beta:3.3
           ports:
             - containerPort: 80
           livenessProbe:
