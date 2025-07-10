@@ -6,7 +6,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
     cert-manager.io/cluster-issuer: "internal-ca-issuer"
-    external-dns.alpha.kubernetes.io/hostname: "wand.needoo.in"
+    external-dns.alpha.kubernetes.io/hostname: "wander-test.wakeb.tech"
 spec:
   ingressClassName: nginx
   tls:
