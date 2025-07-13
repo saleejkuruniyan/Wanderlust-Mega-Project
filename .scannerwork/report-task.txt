@@ -1,0 +1,6 @@
+projectKey=wanderlust
+serverUrl=http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000
+serverVersion=25.5.0.107428
+dashboardUrl=http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000/dashboard?id=wanderlust
+ceTaskId=2d1fdf78-1ed9-49a8-a098-2f526ff9281d
+ceTaskUrl=http://sonarqube-sonarqube.sonarqube.svc.cluster.local:9000/api/ce/task?id=2d1fdf78-1ed9-49a8-a098-2f526ff9281d

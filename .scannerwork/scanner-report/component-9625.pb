@@ -1,0 +1,1 @@
+™K 2tsX7hrfrontend/jest.config.ts

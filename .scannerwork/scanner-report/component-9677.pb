@@ -1,0 +1,1 @@
+ÍK 2jsX*hrfrontend/tailwind.config.js
