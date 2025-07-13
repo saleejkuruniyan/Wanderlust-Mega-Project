@@ -1,1 +1,0 @@
-·K 2tsXhr%frontend/src/config/jest/file-mock.ts

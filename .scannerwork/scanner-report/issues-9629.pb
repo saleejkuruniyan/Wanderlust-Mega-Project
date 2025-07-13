@@ -1,3 +1,0 @@
-‰
-
-typescriptS1077jimg elements must have an alt prop, either with meaningful text, or an empty string for decorative images.2(( 

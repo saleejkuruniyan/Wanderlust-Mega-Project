@@ -1,1 +1,0 @@
-< 2	terraformXhrterraform/variables.tf

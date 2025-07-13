@@ -1,1 +1,0 @@
- 2yamlXhr%kubernetes/persistentVolumeClaim.yaml

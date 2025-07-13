@@ -1,1 +1,0 @@
-¦K 2tsX-hrAfrontend/src/components/skeletons/featured-post-card-skeleton.tsx

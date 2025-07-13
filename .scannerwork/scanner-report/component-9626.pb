@@ -1,1 +1,0 @@
-šK 2tsX0hr.frontend/src/components/featured-post-card.tsx

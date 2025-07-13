@@ -1,1 +1,0 @@
-¨K 2tsX	hr#frontend/src/__tests__/App.test.tsx

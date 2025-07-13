@@ -1,1 +1,0 @@
-®K 2tsXHhr#frontend/src/pages/details-page.tsx

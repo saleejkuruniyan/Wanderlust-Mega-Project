@@ -1,1 +1,0 @@
-9 2yamlX-hrkubernetes/mongodb.yaml

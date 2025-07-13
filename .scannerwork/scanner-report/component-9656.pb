@@ -1,1 +1,0 @@
-¸K 2tsXhr&frontend/src/config/jest/style-mock.ts
