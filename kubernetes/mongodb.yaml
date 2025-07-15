@@ -16,6 +16,8 @@ spec:
       labels:
         app: mongo
     spec:
+      imagePullSecrets:
+        - name: docker-registry-secret
       containers:
         - name: mongo
           image: docker-proxy-test.wakeb.tech/mongo

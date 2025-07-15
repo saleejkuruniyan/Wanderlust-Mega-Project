@@ -16,6 +16,8 @@ spec:
       labels:
         app: redis
     spec:
+      imagePullSecrets:
+        - name: docker-registry-secret
       containers:
         - name: redis
           image: docker-proxy-test.wakeb.tech/redis
