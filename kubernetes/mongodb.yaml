@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: mongo
-          image: mongo
+          image: docker-proxy-test.wakeb.tech/mongo
           ports:
             - containerPort: 27017
           volumeMounts:
