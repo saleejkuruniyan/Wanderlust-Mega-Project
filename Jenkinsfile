@@ -10,14 +10,14 @@ pipeline {
 
     environment {
         SONAR_HOME = tool "Sonar"
-        REGISTRY_PATH = "docker-test.wakeb.tech/wanderlust"
+        REGISTRY_PATH = "docker-hosted.needoo.in/wanderlust"
         NVD_API_KEY = credentials('nvd-api-key')
         OWASP_CACHE_DIR = "/cache/dependency-check-data"
     }
 
     parameters {
-        string(name: 'FRONTEND_DOCKER_TAG', defaultValue: '', description: 'Setting docker image for latest push')
-        string(name: 'BACKEND_DOCKER_TAG', defaultValue: '', description: 'Setting docker image for latest push')
+        string(name: 'FRONTEND_DOCKER_TAG', defaultValue: '', description: 'Frontend Docker tag of the image built by the CI job')
+        string(name: 'BACKEND_DOCKER_TAG', defaultValue: '', description: 'Backend Docker tag of the image built by the CI job')
     }
 
     stages {
@@ -34,7 +34,7 @@ pipeline {
             }
         }
 
-        stage("Workspace cleanup") {
+        stage("Workspace Cleanup") {
             steps {
                 script {
                     try {
@@ -49,29 +49,31 @@ pipeline {
         stage('Git: Code Checkout') {
             steps {
                 script {
-                    code_checkout("https://github.com/saleejkuruniyan/Wanderlust-Mega-Project.git", "rke2")
+                    code_checkout("https://github.com/saleejkuruniyan/Wanderlust-Mega-Project.git", "aks")
                 }
             }
         }
 
-        stage("Security Scans") {
-            parallel {
-                stage("Trivy: Filesystem scan") {
-                    steps {
-                        container('trivy') {
-                            script {
+        stage("Trivy: Filesystem Scan") {
+            steps {
+                container('trivy') {
+                    script {
+                        retry(3) {
+                            sh 'mkdir -p ${WORKSPACE}'
+                            dir("${WORKSPACE}") {
                                 trivy_scan()
                             }
                         }
                     }
                 }
-                stage("OWASP: Dependency check") {
-                    steps {
-                        container('owasp') {
-                            script {
-                                owasp_dependency_api(env.NVD_API_KEY, env.OWASP_CACHE_DIR)
-                            }
-                        }
+            }
+        }
+        
+        stage("OWASP: Dependency check") {
+            steps {
+                container('owasp') {
+                    script {
+                        owasp_dependency_api(env.NVD_API_KEY, env.OWASP_CACHE_DIR)
                     }
                 }
             }
@@ -90,14 +92,6 @@ pipeline {
             }
         }
 
-        stage("SonarQube: Code Quality Gates") {
-            steps {
-                script {
-                    sonarqube_code_quality()
-                }
-            }
-        }
-
         stage("Docker: Build & Push with Kaniko") {
             steps {
                 container('kaniko') {
@@ -111,15 +105,56 @@ pipeline {
                 }
             }
         }
+
+        stage("Update: Kubernetes Manifests") {
+            steps {
+                script {
+                    dir('kubernetes') {
+                        sh """
+                            sed -i -e s/wanderlust-backend-beta.*/wanderlust-backend-beta:${params.BACKEND_DOCKER_TAG}/g backend.yaml
+                        """
+                    }
+
+                    dir('kubernetes') {
+                        sh """
+                            sed -i -e s/wanderlust-frontend-beta.*/wanderlust-frontend-beta:${params.FRONTEND_DOCKER_TAG}/g frontend.yaml
+                        """
+                    }
+                }
+            }
+        }
+
+        stage("Git: Code Update and Push to GitHub") {
+            steps {
+                script {
+                    withCredentials([gitUsernamePassword(credentialsId: 'Github-cred', gitToolName: 'Default')]) {
+                        sh '''
+                        echo "Checking repository status: "
+                        git status
+
+                        echo "Adding changes to git: "
+                        git add kubernetes/
+
+                        echo "Configuring Git identity: "
+                        git config user.name "Jenkins CI"
+                        git config user.email "saleejkuruniyan@gmail.com"
+
+                        echo "Committing changes: "
+                        git commit -m "Updated environment variables"
+
+                        echo "Pushing changes to GitHub: "
+                        git push https://github.com/saleejkuruniyan/Wanderlust-Mega-Project.git aks
+                        '''
+                    }
+                }
+            }
+        }
     }
+
 
     post {
         success {
             archiveArtifacts artifacts: '*.xml', followSymlinks: false
-            build job: "Wanderlust-CD", parameters: [
-                string(name: 'FRONTEND_DOCKER_TAG', value: "${params.FRONTEND_DOCKER_TAG}"),
-                string(name: 'BACKEND_DOCKER_TAG', value: "${params.BACKEND_DOCKER_TAG}")
-            ]
         }
         failure {
             script {

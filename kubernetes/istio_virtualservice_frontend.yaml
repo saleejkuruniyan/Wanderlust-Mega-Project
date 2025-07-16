@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: wander-vs
+  namespace: wanderlust
+spec:
+  hosts:
+  - wander.needoo.in
+  gateways:
+  - istio-system/wander-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: frontend-service.wanderlust.svc.cluster.local
+        port:
+          number: 80

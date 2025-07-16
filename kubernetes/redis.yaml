@@ -20,7 +20,7 @@ spec:
         - name: docker-registry-secret
       containers:
         - name: redis
-          image: docker-proxy-test.wakeb.tech/redis
+          image: docker-proxy.needoo.in/redis
           ports:
             - containerPort: 6379
           volumeMounts:
