@@ -1,0 +1,28 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: backend-vs
+  namespace: wanderlust
+spec:
+  hosts:
+  - apiwander.needoo.in
+  gateways:
+  - istio-system/backend-gateway
+  http:
+  - corsPolicy:
+      allowOrigins:
+      - exact: https://wander.needoo.in
+      allowMethods:
+      - GET
+      - POST
+      - OPTIONS
+      allowHeaders:
+      - Content-Type
+      - Authorization
+      maxAge: "24h"
+      allowCredentials: true
+    route:
+    - destination:
+        host: backend-service.wanderlust.svc.cluster.local
+        port:
+          number: 8080
